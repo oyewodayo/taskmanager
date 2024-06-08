@@ -12,7 +12,7 @@ import moment from "moment";
 import { summary, tasks } from '../assets/data';
 import clsx from 'clsx';
 import Chart from '../components/Chart';
-import { BGS, PRIOTITYSTYELS, TASK_TYPE } from '../utils';
+import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from '../utils';
 import UserInfo from './UserInfo';
 
 const TaskTable = ({tasks})=>{
@@ -64,6 +64,9 @@ const TaskTable = ({tasks})=>{
         ))}
       </div>
     </td>
+    <td className='py-2 hidden md:block'>
+      <span>{moment(task?.date).fromNow()}</span>
+    </td>
   </tr>
   return (
     <>
@@ -81,6 +84,61 @@ const TaskTable = ({tasks})=>{
     </div>
     </>
   )
+}
+
+
+const UserTable = ({users})=>{
+  const TableHeader = () =>(
+    <thead className='border-b border-gray-300'>
+      <tr className='text-black text-left '>
+        <th className='py-2'>Full Name</th>
+        <th className='py-2'>Status</th>
+        <th className='py-2'>Created At</th>
+      </tr>
+    </thead>
+  );
+
+  const TableRow = ({user})=>(
+    <tr className='border-b border-gray-300 text-gray-600 hover:bg-gray-300/10'>
+      <td className='py-2'>
+        <div className='flex items-center gap-3'>
+          <div className='w-9 h-9 rounded-full text-white flex items-center justify-center text-sm bg-violet-700'>
+            <span className='text-center'>
+              {getInitials(user?.name)}
+            </span>
+          </div>
+          <div>
+            <p>{user.name}</p>
+            <span className='text-xs text-black'>{user?.role}</span>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <p className={clsx("w-fit px-3 py-1 rounded-full text-sm", user?.isActive?"bg-blue-200":"bg-yellow-100")}>
+          {user?.isActive ? "Active": "Disable"}
+        </p>
+      </td>
+
+      <td className='py-2 text-sm'>{moment(user?.createdAt).fromNow()}</td>
+    </tr>
+  );
+
+
+  return(
+    <div className='w-full md:1/3 bg-white px-2 md:px-4 pt-4 pb-4 shadow-md rounded'>
+      <table className='w-full'>
+        <TableHeader />
+        <tbody>
+          {
+            users?.map((user, index)=>(
+              <TableRow key={index + user?._id} user={user} />
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 function Dashboard() {
@@ -149,11 +207,14 @@ function Dashboard() {
        <Chart />
       </div>
       <div className='w-full flex flex-col md:flex-grow gap-4 2xl:gap-10 py-8'>
-        <div className=''>
-          <TaskTable
-          tasks={summary.last10Task}
-          />
-        </div>
+        
+        {/* Left */}
+        <TaskTable
+        tasks={summary.last10Task}
+        />
+        
+        {/* Right */}
+        <UserTable users={summary.users} />
       </div>
     </div>
   )
