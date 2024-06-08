@@ -20,7 +20,7 @@ const linkData = [
     },
     {
         label:"Tasks",
-        link: "task",
+        link: "tasks",
         icon: <FaTasks />
     },
     {
